@@ -13,8 +13,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - k8s-prometheus.projectkube.club 
-    secretName: prometheus-tls
+    - "*.projectkube.club" 
+    - k8s-prometheus.projectkube.club
+    secretName: projectkube-tls-key 
   rules:
   - host: k8s-prometheus.projectkube.club
     http:

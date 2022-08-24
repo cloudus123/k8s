@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: projectkube-tls 
+  namespace: cert-manager 
+spec:
+  secretName: projectkube-tls-key 
+  issuerRef:
+    # The issuer created previously
+    name: letsencrypt-prod
+    kind: ClusterIssuer    
+  dnsNames:
+  - '*.projectkube.club'

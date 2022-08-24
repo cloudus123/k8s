@@ -4,17 +4,13 @@ metadata:
   name: grafana-ingress
   namespace: monitoring
   annotations:
-    kubernetes.io/tls-acme: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod 
-    # controls whether the ingress is modified ‘in-place’,
-    # or a new one is created specifically for the HTTP01 challenge.
-    acme.cert-manager.io/http01-edit-in-place: "true"
     kubernetes.io/ingress.class: nginx
 spec:
   tls:
   - hosts:
-    - k8s-grafana.projectkube.club 
-    secretName: grafana-tls
+    - "*.projectkube.club"
+    - k8s-grafana.projectkube.club   
+    secretName: projectkube-tls-key 
   rules:
   - host: k8s-grafana.projectkube.club
     http:

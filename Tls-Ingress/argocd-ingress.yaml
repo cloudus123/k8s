@@ -24,5 +24,6 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
+    - "*.projectkube.club"      
     - k8s-argocd.projectkube.club
-    secretName: argocd-tls-certificate
+    secretName: projectkube-tls-key 

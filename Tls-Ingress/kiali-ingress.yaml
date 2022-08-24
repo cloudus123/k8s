@@ -13,8 +13,8 @@ metadata:
 spec:
   tls:
   - hosts:
-    - k8s-kiali.projectkube.club 
-    secretName: kiali-tls
+    - "*.projectkube.club" 
+    secretName: projectkube-tls-key 
   rules:
   - host: k8s-kiali.projectkube.club
     http:
