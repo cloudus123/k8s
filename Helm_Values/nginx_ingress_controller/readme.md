@@ -5,6 +5,7 @@ https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-conf
 https://neerajswarnkar.medium.com/quick-setup-configuring-wildcard-certificate-issuer-using-letsencrypt-aws-route-53-on-kubernetes-96e78a1e3f39 \
 https://loft.sh/blog/kubernetes-nginx-ingress-10-useful-configuration-options/
 
+**Values.yaml Changes** \
 watchIngressWithoutClass: false 		#line no 75 \
 name: nginx 					#Name of the ingressClass line no 108 \
 externalTrafficPolicy: Local 			#line no 482 \
