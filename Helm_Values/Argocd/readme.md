@@ -2,7 +2,7 @@ helm repo add argo https://argoproj.github.io/argo-helm \
 https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd \
 
 
-
+**Values.yaml Changes** \
 Nginx Annotations 			       #line no 1102 \
 Server nginx: true \
 kubernetes.io/ingress.class: nginx \
