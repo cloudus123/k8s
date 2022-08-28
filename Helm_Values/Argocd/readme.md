@@ -1,4 +1,4 @@
-https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd /n
 helm repo add argo https://argoproj.github.io/argo-helm
 
 
