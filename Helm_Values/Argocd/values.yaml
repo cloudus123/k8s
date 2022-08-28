@@ -212,7 +212,16 @@ controller:
   # -- [Tolerations] for use with node taints
   tolerations: []
   # -- Assign custom [affinity] rules to the deployment
-  affinity: {}
+  #affinity: 
+  #  nodeAffinity:
+  #    preferredDuringSchedulingIgnoredDuringExecution:
+  #    - weight: 1
+  #      preference:
+  #        matchExpressions:
+  #        - key: role
+  #          operator: In
+  #          values:
+  #            - application
 
   # -- Assign custom [TopologySpreadConstraints] rules to the application controller
   ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
@@ -247,7 +256,7 @@ controller:
   ## Application controller metrics configuration
   metrics:
     # -- Deploy metrics service
-    enabled: true 
+    enabled: true
     applicationLabels:
       # -- Enables additional labels in argocd_app_labels metric
       enabled: false
@@ -264,7 +273,7 @@ controller:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: true 
+      enabled: true
       # -- Prometheus ServiceMonitor interval
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -283,7 +292,7 @@ controller:
       namespace: "monitoring"
       # -- Prometheus ServiceMonitor labels
       additionalLabels:
-              release: m001 
+        release: m001
     rules:
       # -- Deploy a PrometheusRule for the application controller
       enabled: false
@@ -379,7 +388,7 @@ dex:
 
   metrics:
     # -- Deploy metrics service
-    enabled: true 
+    enabled: true
     service:
       # -- Metrics service annotations
       annotations: {}
@@ -389,7 +398,7 @@ dex:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: true 
+      enabled: true
       # -- Prometheus ServiceMonitor interval
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -407,8 +416,8 @@ dex:
       # -- Prometheus ServiceMonitor namespace
       namespace: "monitoring"
       # -- Prometheus ServiceMonitor labels
-      additionalLabels:
-             release: m001
+      additionalLabels: 
+        release: m001
 
   image:
     # -- Dex image repository
@@ -595,9 +604,9 @@ redis:
 
   image:
     # -- Redis repository
-    repository: public.ecr.aws/docker/library/redis
+    repository: redis
     # -- Redis tag
-    tag: 7.0.4-alpine
+    tag: 7.0.0-alpine
     # -- Redis imagePullPolicy
     imagePullPolicy: IfNotPresent
 
@@ -710,10 +719,10 @@ redis:
 
   metrics:
     # -- Deploy metrics service and redis-exporter sidecar
-    enabled: true 
+    enabled: false
     image:
       # -- redis-exporter image repository
-      repository: public.ecr.aws/bitnami/redis-exporter
+      repository: bitnami/redis-exporter
       # -- redis-exporter image tag
       tag: 1.26.0-debian-10-r2
       # -- redis-exporter image PullPolicy
@@ -743,7 +752,7 @@ redis:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: true 
+      enabled: false
       # -- Interval at which metrics should be scraped
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -759,10 +768,9 @@ redis:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: "monitoring"
+      namespace: "" # "monitoring"
       # -- Prometheus ServiceMonitor labels
-      additionalLabels:
-             release: m001
+      additionalLabels: {}
 
   pdb:
     # -- Labels to be added to Redis server pdb
@@ -787,6 +795,12 @@ redis-ha:
   exporter:
     # -- If `true`, the prometheus exporter sidecar is enabled
     enabled: true
+    # -- Exporter image
+    # @default -- `nil` (follows subchart default)
+    image: ~
+    # -- Exporter tag
+    # @default -- `nil` (follows subchart default)
+    tag: ~
   persistentVolume:
     # -- Configures persistency on Redis nodes
     enabled: false
@@ -802,12 +816,22 @@ redis-ha:
   haproxy:
     # -- Enabled HAProxy LoadBalancing/Proxy
     enabled: true
+    image:
+      # -- HAProxy Image Repository
+      # @default -- `nil` (follows subchart default)
+      repository: ~
+      # -- HAProxy Image Tag
+      # @default -- `nil` (follows subchart default)
+      tag: ~
     metrics:
       # -- HAProxy enable prometheus metric scraping
       enabled: true
   image:
+    # -- Redis image repository
+    # @default -- `nil` (follows subchart default)
+    repository: ~
     # -- Redis tag
-    tag: 7.0.4-alpine
+    tag: 7.0.0-alpine
 
   ## https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   topologySpreadConstraints:
@@ -869,8 +893,8 @@ server:
     imagePullPolicy: "" # IfNotPresent
 
   # -- Additional command line arguments to pass to Argo CD server
-  extraArgs: 
-    - --insecure
+  extraArgs: []
+  #  - --insecure
 
   # This flag is used to either remove or pass the CLI flag --staticassets /shared/app to the Argo CD server app
   staticAssets:
@@ -975,20 +999,20 @@ server:
   ## Certificate configuration
   certificate:
     # -- Deploy a Certificate resource (requires cert-manager)
-    enabled: true 
+    enabled: false
     # -- Certificate primary domain (commonName)
-    domain: k8s-argocd.projectkube.club 
+    domain: argocd.example.com
     # -- The requested 'duration' (i.e. lifetime) of the Certificate. Value must be in units accepted by Go time.ParseDuration
-    duration: "43800h"
+    duration: ""
     # -- How long before the currently issued certificate's expiry cert-manager should renew the certificate. Value must be in units accepted by Go time.ParseDuration
-    renewBefore: "41800h"
+    renewBefore: ""
     issuer:
       # -- Certificate issuer group. Set if using an external issuer. Eg. `cert-manager.io`
-      group: "cert-manager.io"
+      group: ""
       # -- Certificate issuer kind. Either `Issuer` or `ClusterIssuer`
-      kind: "ClusterIssuer"
+      kind: ""
       # -- Certificate isser name. Eg. `letsencrypt`
-      name: "letsencrypt-prod"
+      name: ""
     # -- Certificate manager additional hosts
     additionalHosts: []
     # -- The name of the Secret that will be automatically created and managed by this Certificate resource
@@ -1032,7 +1056,7 @@ server:
   ## Server metrics service configuration
   metrics:
     # -- Deploy metrics service
-    enabled: true 
+    enabled: true
     service:
       # -- Metrics service annotations
       annotations: {}
@@ -1044,7 +1068,7 @@ server:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: true 
+      enabled: true
       # -- Prometheus ServiceMonitor interval
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -1060,10 +1084,10 @@ server:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: monitoring
+      namespace: "monitoring"
       # -- Prometheus ServiceMonitor labels
       additionalLabels:
-              release: m001 
+        release: m001
 
   serviceAccount:
     # -- Create server service account
@@ -1077,25 +1101,23 @@ server:
 
   ingress:
     # -- Enable an ingress resource for the Argo CD server
-    enabled: true 
+    enabled: true
     # -- Additional ingress annotations
-    annotations:
-       cert-manager.io/cluster-issuer: letsencrypt-prod
-       nginx.ingress.kubernetes.io/ssl-passthrough: "true"
-       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-       kubernetes.io/tls-acme: "true"
-       acme.cert-manager.io/http01-edit-in-place: "true"
+    annotations: 
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # -- Additional ingress labels
     labels: {}
     # -- Defines which ingress controller will implement the resource
-    ingressClassName: nginx 
+    ingressClassName: ""
 
     # -- List of ingress hosts
     ## Argo Ingress.
     ## Hostnames must be provided if Ingress is enabled.
     ## Secrets must be manually created in the namespace
     hosts:
-      - k8s-argocd.projectkube.club
+    #  - argocd.com
 
     # -- List of ingress paths
     paths:
@@ -1120,9 +1142,9 @@ server:
 
     # -- Ingress TLS configuration
     tls:
-       - secretName: argocd-tls-certificate
-         hosts:
-           - k8s-argocd.projectkube.club 
+    #  - secretName: cert
+    #    hosts:
+    #      - argocd.com
 
     # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
     https: false
@@ -1220,7 +1242,7 @@ server:
     # Argo CD instance label key
     application.instanceLabelKey: argocd.argoproj.io/instance
 
-    # Enable logs RBAC enforcement
+    # Enabled logs RBAC enforcement
     # Ref: https://argo-cd.readthedocs.io/en/latest/operator-manual/upgrading/2.3-2.4/#enable-logs-rbac-enforcement
     server.rbac.log.enforce.enable: "false"
 
@@ -1240,22 +1262,6 @@ server:
     #   - type: helm
     #     url: https://argoproj.github.io/argo-helm
     #     name: argo
-
-    # admin.enabled indicates whether the admin user is enabled. It is enabled by default.
-    # https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user
-    admin.enabled: "true"
-
-    # dex.config: |
-    #   connectors:
-    #     # GitHub example
-    #     - type: github
-    #       id: github
-    #       name: GitHub
-    #       config:
-    #         clientID: aabbccddeeff00112233
-    #         clientSecret: $dex.github.clientSecret # Alternatively $<some_K8S_secret>:dex.github.clientSecret
-    #         orgs:
-    #         - name: your-github-org
 
     # oidc.config: |
     #   name: AzureAD
@@ -1647,7 +1653,7 @@ repoServer:
   ## Repo server metrics service configuration
   metrics:
     # -- Deploy metrics service
-    enabled: false
+    enabled: true
     service:
       # -- Metrics service annotations
       annotations: {}
@@ -1659,7 +1665,7 @@ repoServer:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: false
+      enabled: true
       # -- Prometheus ServiceMonitor interval
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -1675,9 +1681,10 @@ repoServer:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: "" # "monitoring"
+      namespace: "monitoring"
       # -- Prometheus ServiceMonitor labels
-      additionalLabels: {}
+      additionalLabels: 
+        release: m001
 
   ## Enable Admin ClusterRole resources.
   ## Enable if you would like to grant cluster rights to Argo CD repo server.
@@ -1877,7 +1884,7 @@ configs:
 
   # -- Repository credentials to be used as Templates for other repos
   ## Creates a secret for each key/value specified below to create repository credentials
-  credentialTemplates: {}
+  credentialTemplates: 
     # github-enterprise-creds-1:
     #   url: https://github.com/argoproj
     #   githubAppID: 1
@@ -1891,12 +1898,9 @@ configs:
     #   url: https://github.com/argoproj
     #   password: my-password
     #   username: my-username
-    # ssh-creds:
-    #  url: git@github.com:argoproj-labs
-    #  sshPrivateKey: |
-    #    -----BEGIN OPENSSH PRIVATE KEY-----
-    #    ...
-    #    -----END OPENSSH PRIVATE KEY-----
+    #ssh-creds:
+    # url: git@github.com:URLHERE
+    # sshPrivateKey:
 
   # -- Annotations to be added to `configs.credentialTemplates` Secret
   credentialTemplatesAnnotations: {}
@@ -1988,7 +1992,7 @@ applicationSet:
   name: applicationset-controller
 
   # -- The number of controller pods to run
-  replicaCount: 1
+  replicaCount: 2
 
   image:
     # -- Repository to use for the application set controller
@@ -2021,7 +2025,7 @@ applicationSet:
   ## Metrics service configuration
   metrics:
     # -- Deploy metrics service
-    enabled: false
+    enabled: true
     service:
       # -- Metrics service annotations
       annotations: {}
@@ -2033,7 +2037,7 @@ applicationSet:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: false
+      enabled: true
       # -- Prometheus ServiceMonitor interval
       interval: 30s
       # -- Prometheus [RelabelConfigs] to apply to samples before scraping
@@ -2049,9 +2053,10 @@ applicationSet:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: ""  # monitoring
+      namespace: "monitoring"
       # -- Prometheus ServiceMonitor labels
-      additionalLabels: {}
+      additionalLabels: 
+        release: m001
 
   # -- If defined, uses a Secret to pull an image from a private Docker registry or repository.
   imagePullSecrets: []
@@ -2282,7 +2287,7 @@ notifications:
 
   metrics:
     # -- Enables prometheus metrics server
-    enabled: false
+    enabled: true
     # -- Metrics port
     port: 9001
     service:
@@ -2294,15 +2299,16 @@ notifications:
       portName: http-metrics
     serviceMonitor:
       # -- Enable a prometheus ServiceMonitor
-      enabled: false
+      enabled: true
       # -- Prometheus ServiceMonitor selector
       selector: {}
         # prometheus: kube-prometheus
       # -- Prometheus ServiceMonitor labels
-      additionalLabels: {}
-      # namespace: monitoring
-      # interval: 30s
-      # scrapeTimeout: 10s
+      additionalLabels: 
+        release: m001
+      namespace: monitoring
+      interval: 30s
+      scrapeTimeout: 10s
       # -- Prometheus ServiceMonitor scheme
       scheme: ""
       # -- Prometheus ServiceMonitor tlsConfig
@@ -2700,4 +2706,3 @@ notifications:
 
       # -- [Node selector]
       nodeSelector: {}
-
